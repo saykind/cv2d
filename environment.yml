@@ -1,0 +1,6 @@
+name: cv2d
+channels:
+  - defaults
+dependencies:
+  - python=3.8.15
+  - tensorflow==2.3.0
