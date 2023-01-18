@@ -392,7 +392,7 @@ def predict(img='input/img1.jpeg', bkg='input/bkg1.jpeg', size=None, model=None)
 
     out = np.array(model(X.reshape((1,size[0],size[1],6)))).reshape(size)
     
-    return img, out
+    return img, bkg, out
 
 def plot_data(img, out):
     fig, axes = plt.subplots(nrows=1, ncols=2)
@@ -425,10 +425,10 @@ if __name__ == "__main__":
         bkg = sys.argv[2]
         if bkg[0] == '[':
             bkg = ast.literal_eval(bkg)
-        img, out = predict(img, bkg)
+        img, bkg, out = predict(img, bkg)
     else:
         print("Running algorithm using test images.")
-        img, out = predict()
+        img, bkg, out = predict()
         
     foldername = make_foldername();
     
@@ -441,6 +441,9 @@ if __name__ == "__main__":
     min_value = np.min(out)
     max_value = np.max(out)
     Image.fromarray(np.uint8((out-min_value)*255/(max_value-min_value))).save(foldername+'/grayscale.tiff')
+    
+    Image.fromarray(img).save(foldername+'/img.jpeg')
+    Image.fromarray(bkg).save(foldername+'/bkg.jpeg')
     
     print(f'Range: {round(100*min_value,3), round(100*max_value,3)} nm.')
     print(f'Z-scale (gwyddion): {round((max_value-min_value)*100/255,5)} x 10e-9.')

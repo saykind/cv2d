@@ -14,7 +14,7 @@ conda activate cv2d
 ```
 or equivalently
 ```
-conda create -y -n cv2d python=3.8.15 tensorflow==2.3.0
+conda create -y -n cv2d python=3.8.15 tensorflow==2.3.0 pillow==9.3.0 opencv matplotlib
 conda activate cv2d
 ```
 If you want to use this environment in jupyter-lab, create kernel assosiated with this python environment
