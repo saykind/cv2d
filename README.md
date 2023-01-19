@@ -14,9 +14,17 @@ conda activate cv2d
 ```
 or equivalently
 ```
-conda create -y -n cv2d python=3.8.15 tensorflow==2.3.0 pillow==9.3.0 opencv matplotlib
+conda create -y -n cv2d python=3.8.15 tensorflow==2.3.0 pillow==9.3.0 opencv matplotlib==3.5.3
 conda activate cv2d
 ```
+You may also use pip
+```
+conda create -n cv2d python=3.8.15
+pip install tensorflow==2.3.0 pillow==9.3.0 opencv-python matplotlib==3.5.3
+conda activate cv2d
+```
+
+
 If you want to use this environment in jupyter-lab, create kernel assosiated with this python environment
 ```
 pip install --user ipykernel
@@ -38,6 +46,12 @@ You may also specify background color in RGB format using square brackets:
 ```
 python cv2d.py input/img1.jpeg "[175, 115, 155]"
 ```
+Or just flake color and backgroung color (valid padding is used for this case)
+```
+python cv2d.py "[89, 151, 213]" "[175, 115, 155]"
+```
+Pay attention to quotes around the argument and use integers between 0 and 255 to specify the color.
+
 Result is saved to `output<#>` folder.
 Keep in mind, that non-square images are automatically rescaled.
 You may open grayscale image with Gwyddion and provide z-scaling.

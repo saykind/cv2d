@@ -6,4 +6,4 @@ dependencies:
   - tensorflow==2.3.0
   - pillow==9.3.0
   - opencv
-  - matplotlib
+  - matplotlib==3.5.3

@@ -340,10 +340,10 @@ def show_data(X, B, Y, i=None):
     
     
 # Predict using saved model weights
-def make_model(shape=(256,256,6)):
+def make_model(shape=(256,256,6), padding='same'):
     model_name = 'cv2d_v1'
     inputs = tf.keras.Input(shape=shape)
-    conv = tf.keras.layers.Conv2D(12, 3, padding='same', activation='relu')(inputs)
+    conv = tf.keras.layers.Conv2D(12, 3, padding=padding, activation='relu')(inputs)
     conv = tf.keras.layers.Conv2D(6, 1, padding='same', activation='relu')(conv)
     conv = tf.keras.layers.Conv2D(1, 1, padding='same', activation='sigmoid')(conv)
     model = tf.keras.Model(inputs=inputs, outputs=conv, name=model_name)
@@ -381,7 +381,11 @@ def predict(img='input/img1.jpeg', bkg='input/bkg1.jpeg', size=None, model=None)
     except:
         print("Wrong imput data type.")
         return
-            
+         
+    img = img[:,:,:3]
+    bkg = bkg[:,:,:3]
+    img = img.astype(np.uint8)
+    bkg = bkg.astype(img.dtype)
     img = cv2.resize(img, dsize=size, interpolation=cv2.INTER_CUBIC)
     bkg = cv2.resize(bkg.astype(img.dtype), dsize=size, interpolation=cv2.INTER_CUBIC)
     X = np.concatenate((img, bkg), axis=-1)
@@ -390,9 +394,16 @@ def predict(img='input/img1.jpeg', bkg='input/bkg1.jpeg', size=None, model=None)
     if model is None:
         model = make_model()
 
-    out = np.array(model(X.reshape((1,size[0],size[1],6)))).reshape(size)
+    X = X.reshape((1,size[0],size[1],6))
+    out = np.array(model(X))
+    out = out.reshape(out.shape[1:3])
     
     return img, bkg, out
+
+def measure(clr, bkg, model=None):
+    if model is None:
+        model = make_model()
+    
 
 def plot_data(img, out):
     fig, axes = plt.subplots(nrows=1, ncols=2)
@@ -421,11 +432,19 @@ def make_foldername():
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:
+        model = None
         img = sys.argv[1]
         bkg = sys.argv[2]
+        if img[0] == '[':
+            img = ast.literal_eval(img)
         if bkg[0] == '[':
             bkg = ast.literal_eval(bkg)
-        img, bkg, out = predict(img, bkg)
+        if type(img) == list and type(bkg)==list:
+            img = make_background(img, (128,64,3))
+            bkg = make_background(bkg, (128,64,3))
+            img = np.concatenate((bkg, img), axis=1)
+            model = make_model(padding='valid')
+        img, bkg, out = predict(img, bkg, model=model)
     else:
         print("Running algorithm using test images.")
         img, bkg, out = predict()
